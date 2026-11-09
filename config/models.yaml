@@ -1,0 +1,78 @@
+# ============================================================================
+# ADA - Catalogo Desacoplado de Modelos Locales Libres (Capa 2)
+# Todos los modelos seleccionados poseen licencias OSI abiertas (Apache-2.0 / MIT)
+# y pesos completos en HuggingFace (safetensors) para QLoRA fine-tuning en PyTorch.
+# ============================================================================
+
+runtime:
+  backend: ollama
+  host: http://127.0.0.1:11434
+  openai_base_url: http://127.0.0.1:11434/v1
+  models_dir: ./.ollama/models
+  flash_attention: true
+  kv_cache_type: q8_0
+  default_num_ctx: 16384
+  seed: 42
+  # En 12 GB VRAM no residen dos modelos de 14B a la vez: se descarga el anterior con keep_alive=0
+  vram_swap_unload_previous: true
+
+roles:
+  # Caso 1: Cerebro Orquestador, Tool Calling, Ingesta/Limpieza/Filtrado y Estadistica
+  orchestrator:
+    provider: ollama-local
+    ollama_tag: qwen3:14b
+    huggingface_repo: Qwen/Qwen3-14B
+    license: Apache-2.0
+    quantization_inference: Q4_K_M
+    approx_vram_weights_gib: 9.3
+    approx_vram_kv_q8_16k_gib: 1.25
+    supports_native_tools: true
+    supports_hybrid_thinking: true
+    subagents_assigned:
+      - orquestador
+      - ingestor
+      - limpiador
+      - estadistico
+      - investigador_web
+      - redactor
+
+  # Caso 2: Razonador Matematico (Calculo/EDOs Pendulo) y Agente Critico / Revisor
+  reasoner_critic:
+    provider: ollama-local
+    ollama_tag: deepseek-r1:14b
+    huggingface_repo: deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
+    license: MIT
+    quantization_inference: Q4_K_M
+    approx_vram_weights_gib: 9.0
+    approx_vram_kv_q8_16k_gib: 1.25
+    supports_native_tools: false
+    supports_deep_cot: true
+    subagents_assigned:
+      - critico
+      - matematico
+      - simulador
+
+# Configuracion preparada para Fase 8 (Fine-Tuning QLoRA 4-bit NF4 en PyTorch cu128)
+training_pytorch_qlora:
+  framework: pytorch-cu128
+  compute_capability_target: sm_120
+  precision: bf16
+  quantization: nf4_double_quant
+  # Backbone agil de 8B (Apache-2.0, ~7.2 GiB VRAM entrenando) y backbone completo de 14B (~11.4 GiB VRAM con VRAM limpia)
+  agile_backbone_hf: Qwen/Qwen3-8B
+  full_orchestrator_backbone_hf: Qwen/Qwen3-14B
+  full_reasoner_backbone_hf: deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
+  lora_r: 16
+  lora_alpha: 32
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+
+fallback_apis:
+  enabled: false
+  require_human_approval_per_call: true

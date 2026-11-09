@@ -1,0 +1,61 @@
+# ============================================================================
+# ADA - Politica de Permisos y Seguridad en Capas (Secciones 6 y 13)
+# ============================================================================
+
+harness_policy:
+  # El agente en DeepSeek Harness arranca en solo lectura y pide confirmacion ante escaladas
+  default_sandbox_mode: read-only
+  default_approval_policy: ask
+  allow_self_policy_modification: false
+  network_bind: 127.0.0.1
+
+filesystem_boundaries:
+  immutable_read_only:
+    - data/raw
+    - config/permissions.yaml
+  readable_roots:
+    - data/raw
+    - data/samples
+    - data/work
+    - docs
+    - reports
+    - outputs
+  mcp_writable_roots:
+    - data/work
+    - outputs
+    - reports
+
+python_code_sandbox:
+  network_enabled: false
+  timeout_seconds: 30
+  max_memory_mb: 2048
+  isolated_temp_dir: true
+  allowed_imports:
+    - math
+    - cmath
+    - statistics
+    - fractions
+    - decimal
+    - json
+    - csv
+    - re
+    - numpy
+    - scipy
+    - sympy
+    - mpmath
+    - statsmodels
+    - sklearn
+    - pandas
+    - polars
+    - duckdb
+    - matplotlib
+    - seaborn
+  forbidden_modules:
+    - subprocess
+    - socket
+    - urllib
+    - requests
+    - httpx
+    - ctypes
+    - shutil
+    - winreg

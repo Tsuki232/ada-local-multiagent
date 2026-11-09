@@ -1,0 +1,64 @@
+# ============================================================================
+# ADA - Patch Oficial de DeepSeek Harness (Cordis)
+# Conecta modelos locales libres en Ollama (127.0.0.1:11434/v1) sin requerir
+# clave API externa y monta el servidor MCP verificado de ADA (`mcp__ada__*`).
+# ============================================================================
+
+- id: llm-pi-ai
+  name: "@deepseek-ai/dsh-llm-pi-ai"
+  config:
+    providers:
+      ollama-local:
+        displayName: ADA Local (RTX 5070)
+        api: openai-completions
+        baseURL: http://127.0.0.1:11434/v1
+        streamIdleTimeoutMs: 300000
+        headers:
+          Authorization: Bearer ollama-local
+        compat:
+          supportsDeveloperRole: false
+          maxTokensField: max_tokens
+        models:
+          - id: ada-q
+            name: Ada Q
+            contextWindow: 131072
+            maxTokens: 131072
+            compat:
+              supportsReasoningEffort: true
+              thinkingFormat: openai
+            reasoningEfforts:
+              off: none
+              high: high
+          - id: ada-r1
+            name: Ada r1
+            contextWindow: 131072
+            maxTokens: 131072
+
+- id: agent-default-model
+  name: "@deepseek-ai/dsh-agent-default-model"
+  config:
+    provider: ollama-local
+    model: ada-q
+    reasoningEffort: off
+
+- id: session-telemetry-otel
+  disabled: true
+
+- insert:
+    - id: mcp-ada
+      name: "@deepseek-ai/dsh-mcp-client"
+      config:
+        transport: stdio
+        serverName: ada
+        command: 'G:\programas\Ada\.venv\Scripts\python.exe'
+        args:
+          - -m
+          - ada.tools.mcp_server
+        cwd: 'G:\programas\Ada'
+        env:
+          ADA_CANVAS_STUDIO: "60fps"
+          ADA_UI_STUDIO: "adascene-v4"
+          ADA_CREATOR: Diego Lopez
+          ADA_MODEL_ORCHESTRATOR: ada-q
+          ADA_MODEL_REASONER: ada-r1
+        toolCallTimeoutMs: 180000
