@@ -1,0 +1,41 @@
+# Secretos y configuracion sensible (Regla 4)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.credentials.yaml
+
+# Entornos virtuales y caches de Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# Runtime aislado de DeepSeek Harness, Node portable y modelos locales pesados
+.dsh_home/
+.tools/
+node_modules/
+.ollama/
+models/checkpoints/
+models/gguf/
+models/adapters/
+
+# Datos de trabajo, salidas y reportes generados (data/raw y data/samples se controlan explicitamente)
+data/work/*
+!data/work/.gitkeep
+outputs/*
+!outputs/.gitkeep
+reports/*
+!reports/.gitkeep
+
+# Logs temporales y SO
+*.log
+Thumbs.db
+.DS_Store
