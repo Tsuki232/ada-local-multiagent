@@ -1,0 +1,702 @@
+/* ============================================================================
+   ADA OBSIDIAN & GLASS BENTO DESIGN SYSTEM v2.0
+   Creado para ADA (Arquitecto: Diego López) — 100% Local, Dual-Theme, Responsive
+   ============================================================================ */
+
+:root,
+[data-theme="dark"] {
+  --bg-base: #060913;
+  --bg-elevated: #0b1122;
+  --bg-card: rgba(15, 23, 42, 0.74);
+  --bg-card-hover: rgba(19, 30, 56, 0.86);
+  --bg-subtle: rgba(30, 41, 59, 0.48);
+  --bg-canvas: rgba(8, 13, 27, 0.78);
+  --border-subtle: rgba(148, 163, 184, 0.14);
+  --border-strong: rgba(56, 189, 248, 0.36);
+  --inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow-card: 0 16px 40px -12px rgba(2, 6, 23, 0.72), 0 2px 10px rgba(2, 6, 23, 0.45);
+  --shadow-tooltip: 0 20px 44px -8px rgba(0, 0, 0, 0.82);
+
+  --txt-primary: #f1f5f9;
+  --txt-secondary: #94a3b8;
+  --txt-muted: #64748b;
+
+  --accent-cyan: #38bdf8;
+  --accent-indigo: #818cf8;
+  --accent-violet: #a78bfa;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+
+  --grid-stroke: rgba(148, 163, 184, 0.11);
+  --axis-stroke: rgba(148, 163, 184, 0.28);
+  --chart-txt: #94a3b8;
+  --chart-title: #e2e8f0;
+
+  --mesh-1: rgba(56, 189, 248, 0.11);
+  --mesh-2: rgba(129, 140, 248, 0.10);
+  --mesh-3: rgba(16, 185, 129, 0.06);
+}
+
+[data-theme="light"] {
+  --bg-base: #f4f7fb;
+  --bg-elevated: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.88);
+  --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --bg-subtle: rgba(241, 245, 249, 0.85);
+  --bg-canvas: rgba(248, 250, 252, 0.94);
+  --border-subtle: rgba(15, 23, 42, 0.09);
+  --border-strong: rgba(2, 132, 199, 0.35);
+  --inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-card: 0 12px 32px -10px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --shadow-tooltip: 0 18px 38px -8px rgba(15, 23, 42, 0.18);
+
+  --txt-primary: #0f172a;
+  --txt-secondary: #475569;
+  --txt-muted: #64748b;
+
+  --accent-cyan: #0284c7;
+  --accent-indigo: #4f46e5;
+  --accent-violet: #7c3aed;
+  --accent-emerald: #059669;
+  --accent-amber: #d97706;
+  --accent-rose: #e11d48;
+
+  --grid-stroke: rgba(15, 23, 42, 0.07);
+  --axis-stroke: rgba(15, 23, 42, 0.22);
+  --chart-txt: #475569;
+  --chart-title: #0f172a;
+
+  --mesh-1: rgba(2, 132, 199, 0.08);
+  --mesh-2: rgba(79, 70, 229, 0.07);
+  --mesh-3: rgba(5, 150, 105, 0.05);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 15px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI Variable', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  color: var(--txt-primary);
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(at 10% 8%, var(--mesh-1) 0px, transparent 48%),
+    radial-gradient(at 88% 12%, var(--mesh-2) 0px, transparent 50%),
+    radial-gradient(at 52% 92%, var(--mesh-3) 0px, transparent 52%);
+  background-attachment: fixed;
+  line-height: 1.55;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+code, pre, .ada-mono {
+  font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Top Command Bar --- */
+.ada-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 24px;
+  background: var(--bg-card);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.ada-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+}
+
+.ada-brand-orb {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+  box-shadow: 0 0 12px var(--accent-cyan);
+  animation: adaPulse 2.4s infinite ease-in-out;
+}
+
+@keyframes adaPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.72; }
+}
+
+.ada-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* --- Main Shell --- */
+.ada-shell {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+}
+
+/* --- Hero Header --- */
+.ada-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.ada-hero-title {
+  margin: 0;
+  font-size: clamp(1.38rem, 2.2vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  background: linear-gradient(125deg, var(--txt-primary) 30%, var(--accent-cyan) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ada-hero-sub, .sub {
+  margin: 6px 0 0;
+  color: var(--txt-secondary);
+  font-size: 0.94rem;
+  max-width: 820px;
+}
+
+.ada-pill-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ada-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--txt-secondary);
+  white-space: nowrap;
+}
+
+.ada-pill strong {
+  color: var(--txt-primary);
+}
+
+/* --- Buttons --- */
+.ada-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 9px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--txt-primary);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.16s ease;
+}
+
+.ada-btn:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-card-hover);
+  transform: translateY(-1px);
+}
+
+.ada-btn-primary {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(129, 140, 248, 0.22));
+  border-color: var(--border-strong);
+}
+
+/* --- KPI Strip --- */
+.ada-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.ada-kpi-card {
+  position: relative;
+  overflow: hidden;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card), var(--inner-glow);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  animation: adaFadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ada-kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+}
+
+.ada-kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--kpi-accent, var(--accent-cyan)), transparent 85%);
+}
+
+.ada-kpi-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--txt-muted);
+  margin-bottom: 6px;
+}
+
+.ada-kpi-value {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--txt-primary);
+  line-height: 1.15;
+}
+
+.ada-kpi-meta {
+  margin-top: 7px;
+  font-size: 0.79rem;
+  color: var(--txt-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* --- Bento Grid & Backward-Compatible Aliases --- */
+.ada-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.ada-col-12 { grid-column: span 12; }
+.ada-col-8  { grid-column: span 8; }
+.ada-col-7  { grid-column: span 7; }
+.ada-col-6  { grid-column: span 6; }
+.ada-col-5  { grid-column: span 5; }
+.ada-col-4  { grid-column: span 4; }
+
+@media (max-width: 1060px) {
+  .ada-col-8, .ada-col-7, .ada-col-6, .ada-col-5, .ada-col-4 {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 640px) {
+  .ada-shell { padding: 16px 14px 36px; }
+  .ada-topbar { padding: 10px 14px; }
+}
+
+.ada-card, .card {
+  position: relative;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: var(--shadow-card), var(--inner-glow);
+  animation: adaFadeUp 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes adaFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ada-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.ada-card-title, .card h2 {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--txt-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ada-card-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.81rem;
+  color: var(--txt-secondary);
+}
+
+/* --- Segmented Tabs --- */
+.ada-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 11px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.ada-tab-btn {
+  border: none;
+  background: transparent;
+  color: var(--txt-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.ada-tab-btn:hover {
+  color: var(--txt-primary);
+}
+
+.ada-tab-btn.is-active {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(129, 140, 248, 0.22));
+  color: var(--txt-primary);
+  box-shadow: 0 2px 8px rgba(2, 6, 23, 0.24);
+}
+
+/* --- Interactive Chart Stage & Floating Glass Tooltip --- */
+.ada-chart-stage {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  border-radius: 14px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.ada-chart-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.ada-floating-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 30;
+  min-width: 185px;
+  max-width: 290px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-tooltip);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--txt-primary);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.ada-floating-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ada-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: var(--txt-secondary);
+  flex-wrap: wrap;
+}
+
+.ada-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ada-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+/* --- Badges & Status Verdicts --- */
+.ada-badge, .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.ada-badge-ok, .OK {
+  background: rgba(16, 185, 129, 0.16);
+  color: var(--accent-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.34);
+}
+
+.ada-badge-caution, .CAUTION {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.34);
+}
+
+.ada-badge-risk, .HIGH_RISK {
+  background: rgba(244, 63, 94, 0.16);
+  color: var(--accent-rose);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+}
+
+.ada-badge-info {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.32);
+}
+
+/* --- Callout Alerts (Statistical Critic) --- */
+.ada-callout-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ada-callout {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-left-width: 4px;
+  font-size: 0.85rem;
+  line-height: 1.48;
+}
+
+.ada-callout.is-caution { border-left-color: var(--accent-amber); }
+.ada-callout.is-risk    { border-left-color: var(--accent-rose); }
+.ada-callout.is-ok      { border-left-color: var(--accent-emerald); }
+.ada-callout.is-info    { border-left-color: var(--accent-cyan); }
+
+.ada-callout-title {
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+/* --- Feature Importance & Progress Bars --- */
+.ada-bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.ada-bar-row, .bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ada-bar-label, .bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+
+.ada-bar-track, .bar-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.ada-bar-fill, .bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-indigo), var(--accent-violet));
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Data Explorer Tables --- */
+.ada-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.ada-search-input {
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  color: var(--txt-primary);
+  font-size: 0.82rem;
+  min-width: 210px;
+  outline: none;
+  transition: border-color 0.16s ease;
+}
+
+.ada-search-input:focus {
+  border-color: var(--accent-cyan);
+}
+
+.ada-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.ada-table, table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ada-table th, table th {
+  text-align: left;
+  padding: 11px 13px;
+  background: var(--bg-subtle);
+  color: var(--txt-secondary);
+  font-weight: 700;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-subtle);
+  user-select: none;
+}
+
+.ada-table th[data-sortable="true"] {
+  cursor: pointer;
+}
+
+.ada-table th[data-sortable="true"]:hover {
+  color: var(--accent-cyan);
+}
+
+.ada-table td, table td {
+  padding: 10px 13px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--txt-primary);
+}
+
+.ada-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ada-table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.ada-row-winner {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.11), rgba(129, 140, 248, 0.05));
+}
+
+/* --- Interactive Controls / Sliders --- */
+.ada-controls-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 13px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+}
+
+.ada-control-group label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--txt-secondary);
+  margin-bottom: 6px;
+}
+
+.ada-control-group input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent-cyan);
+  cursor: pointer;
+}
+
+/* --- Footer Signature --- */
+.ada-footer {
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  color: var(--txt-muted);
+}
