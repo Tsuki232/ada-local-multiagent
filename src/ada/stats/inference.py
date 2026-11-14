@@ -133,8 +133,11 @@ def _mc_tol(p: float) -> float:
 # ----------------------------------------------------------------------------- 1. dos grupos
 
 
-def compare_two_groups(x: Any, y: Any, *, paired: bool = False, alternative: str = "two-sided", alpha: float = 0.05, method: str = "auto") -> dict[str, Any]:
-    """Compara dos grupos eligiendo la prueba segun los supuestos. Devuelve estadistico, p, tamano del efecto, IC y verificacion dual."""
+def compare_two_groups(x: Any, y: Any, *, paired: bool = False, alternative: str = "two-sided", alpha: float = 0.05, method: str = "auto", sensitivity: bool = True) -> dict[str, Any]:
+    """Compara dos grupos eligiendo la prueba segun los supuestos. Devuelve estadistico, p, tamano del efecto, IC y verificacion dual.
+
+    `sensitivity=False` (solo con method='welch'|'student') omite el analisis de sensibilidad automatico: su prueba robusta usa bootstrap/permutaciones
+    de coste n1*n2 y no escala a decenas de miles de filas. Se AVISA en `warnings`; quien lo pide debe aportar su propia comprobacion robusta."""
     if alternative not in {"two-sided", "greater", "less"}:
         raise ValueError("alternative debe ser 'two-sided', 'greater' o 'less'.")
     if method not in {"auto", "welch", "student", "mann_whitney"}:
@@ -142,7 +145,7 @@ def compare_two_groups(x: Any, y: Any, *, paired: bool = False, alternative: str
     if method != "auto":
         if paired:
             raise ValueError("`method` solo aplica a grupos independientes (en datos pareados la prueba se elige por los supuestos).")
-        return _two_groups_forced(_arr(x, "grupo x"), _arr(y, "grupo y"), method, alternative, alpha)
+        return _two_groups_forced(_arr(x, "grupo x"), _arr(y, "grupo y"), method, alternative, alpha, sensitivity=sensitivity)
     x, y = _arr(x, "grupo x"), _arr(y, "grupo y")
     rng = np.random.default_rng(SEED)
     why: list[str] = []
@@ -600,7 +603,7 @@ ANALYSES = {
 # ----------------------------------------------------------------------------- 1b. prueba FORZADA (method=) y analisis de sensibilidad
 
 
-def _two_groups_forced(x: np.ndarray, y: np.ndarray, method: str, alternative: str, alpha: float) -> dict[str, Any]:
+def _two_groups_forced(x: np.ndarray, y: np.ndarray, method: str, alternative: str, alpha: float, sensitivity: bool = True) -> dict[str, Any]:
     """El usuario fija la prueba (p. ej. la guia exige Welch). Nunca se sustituye en silencio: si los supuestos no se sostienen se AVISA y,
     para Welch/Student, se devuelve ademas el resultado robusto como `sensitivity` (analisis de sensibilidad)."""
     rng = np.random.default_rng(SEED)
@@ -641,10 +644,13 @@ def _two_groups_forced(x: np.ndarray, y: np.ndarray, method: str, alternative: s
             warnings.append(f"Las varianzas difieren (Levene p={lev.pvalue:.4g}): la t agrupada infla los falsos positivos; Welch es la opción segura.")
         if not (okx and oky):
             bad = [n for n, ok in (("x", okx), ("y", oky)) if not ok]
-            warnings.append(f"Normalidad dudosa en {', '.join(bad)} (Shapiro p={ix['shapiro_p']} y {iy['shapiro_p']}): se calculó la prueba pedida y se incluye `sensitivity` con la alternativa robusta.")
-            sens = compare_two_groups(x, y, alternative=alternative, alpha=alpha, method="mann_whitney" if lev.pvalue >= 0.05 else "auto")
-            out["sensitivity"] = {k: sens[k] for k in ("test", "statistic", "p_value", "effect_size", "decision", "verified") if k in sens}
-            out["sensitivity"]["agrees_with_requested"] = bool((sens["p_value"] < alpha) == (p < alpha))
+            if sensitivity:
+                warnings.append(f"Normalidad dudosa en {', '.join(bad)} (Shapiro p={ix['shapiro_p']} y {iy['shapiro_p']}): se calculó la prueba pedida y se incluye `sensitivity` con la alternativa robusta.")
+                sens = compare_two_groups(x, y, alternative=alternative, alpha=alpha, method="mann_whitney" if lev.pvalue >= 0.05 else "auto")
+                out["sensitivity"] = {k: sens[k] for k in ("test", "statistic", "p_value", "effect_size", "decision", "verified") if k in sens}
+                out["sensitivity"]["agrees_with_requested"] = bool((sens["p_value"] < alpha) == (p < alpha))
+            else:
+                warnings.append(f"Normalidad dudosa en {', '.join(bad)} (Shapiro p={ix['shapiro_p']} y {iy['shapiro_p']}): se calculó la prueba pedida; el análisis de sensibilidad automático se omitió a petición (sensitivity=False) y debe aportarse aparte.")
     else:  # mann_whitney forzado
         res = stats.mannwhitneyu(x, y, alternative=alternative, method="auto")
         p, u1 = float(res.pvalue), float(res.statistic)
